@@ -1,37 +1,1756 @@
 {
-  "openapi": "2.0.0",
+  "swagger": "2.0",
   "info": {
+    "version": "13",
     "title": "Frappe / ERPNext API",
     "contact": {
+      "email": "hallo@alyf.de",
       "name": "ALYF GmbH",
-      "url": "https://alyf.de",
-      "email": "hallo@alyf.de"
-    },
-    "license": {
-      "name": "GPL-3.0",
-      "url": "http://www.gnu.de/documents/gpl-3.0.en.html"
-    },
-    "version": "13"
+      "url": "https://alyf.de"
+    }
   },
-  "externalDocs": {
-    "url": "https://frappe.io/docs/user/en/api/rest"
-  },
-  "servers": [
-    {
-      "url": "https://demo.erpnext.com",
-      "description": "Demo server"
+  "host": "taqniyat2022.erpnext.com",
+  "basePath": "/",
+  "securityDefinitions": {
+    "tokenAuth": {
+      "type": "apiKey",
+      "description": "Get your  API keys at User -> Api Access -> Generate Keys.\n\"headers = {'Authorization': 'token <api_key>:<api_secret>'}\"",
+      "name": "Authorization",
+      "in": "header"
     },
-    {
-      "url": "https://{company}.erpnext.com",
-      "description": "Custom ERPNext.com instance",
-      "variables": {
-        "company": {
-          "description": "Subdomain of your company's custom ERPNext instance",
-          "default": "demo"
+    "basicAuth": {
+      "type": "basic",
+      "description": "Get your API keys at User -> Api Access -> Generate Keys.\nusername = api_key; password = api_secret\n[More info](https://frappe.io/docs/user/en/guides/integration/token_based_auth)\n"
+    },
+    "oAuth2": {
+      "type": "oauth2",
+      "description": "This API uses OAuth 2 with the authorization code flow. \n[More info]https://frappe.io/docs/user/en/guides/integration/using_oauth)\n",
+      "flow": "accessCode",
+      "authorizationUrl": "https://taqniyat2022.erpnext.com/method/frappe.integrations.oauth2.authorize",
+      "tokenUrl": "https://taqniyat2022.erpnext.com/method/frappe.integrations.oauth2.get_token",
+      "scopes": {
+        "all": "Same permissions as the user who created the oAuth client"
+      }
+    }
+  },
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/method/login": {
+      "post": {
+        "description": "Authenticate yourself",
+        "summary": "login",
+        "tags": [
+          "Naive Authentication",
+          "Example Procedures"
+        ],
+        "operationId": "login",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "usr",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Your username"
+          },
+          {
+            "name": "pwd",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Your password"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": false,
+            "enum": [
+              "application/x-www-form-urlencoded"
+            ],
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "data",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_1"
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/method/logout": {
+      "get": {
+        "description": "Logout from current session",
+        "summary": "Logout from current session",
+        "tags": [
+          "Naive Authentication",
+          "Example Procedures"
+        ],
+        "operationId": "Logoutfromcurrentsession",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Logged out.",
+            "schema": {
+              "type": "object",
+              "default": ""
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/method/frappe.auth.get_logged_user": {
+      "get": {
+        "description": "Get the currently logged in user",
+        "summary": "authGetLoggedUser",
+        "tags": [
+          "Naive Authentication",
+          "Example Procedures"
+        ],
+        "operationId": "authGetLoggedUser",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "search results matching criteria",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            },
+            "examples": {
+              "application/json": {
+                "message": "demo@erpnext.com"
+              }
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/resource/{DocType}": {
+      "get": {
+        "description": "Returns a list of documents of the given type",
+        "summary": "Get a list of documents",
+        "tags": [
+          "RESTful API"
+        ],
+        "operationId": "Getalistofdocuments",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "DocType",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The DocType you'd like to receive. For example Customer, Supplier, \nEmployee, Account, Lead, Company, Sales Invoice, Purchase Invoice, Stock Entry, etc."
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "default": "[\r\n  \"name\"\r\n]",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]"
+          },
+          {
+            "name": "limit_page_length",
+            "in": "query",
+            "required": false,
+            "default": 20,
+            "type": "integer",
+            "format": "int32",
+            "description": "By default, all listings are returned paginated. With this parameter you can change the \npage size (how many items are teturned at once)."
+          },
+          {
+            "name": "limit_start",
+            "in": "query",
+            "required": false,
+            "default": 0,
+            "type": "integer",
+            "format": "int32",
+            "description": "To request successive pages, pass a multiple of your limit_page_length as limit_start. \nFor Example, to request the second page, pass limit_start as 20."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Found requested DocType. By default, only the \"name\" field is included in the listing, \nto add more fields, you can pass the fields param to GET request.",
+            "schema": {
+              "$ref": "#/definitions/DocList"
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new document",
+        "summary": "Create a new document",
+        "tags": [
+          "RESTful API"
+        ],
+        "operationId": "Createanewdocument",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "DocType",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The DocType you'd like to receive. For example Customer, Supplier, \nEmployee, Account, Lead, Company, Sales Invoice, Purchase Invoice, Stock Entry, etc."
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": false,
+            "enum": [
+              "application/x-www-form-urlencoded"
+            ],
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "data",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document created",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200"
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/resource/{DocType}/{DocumentName}": {
+      "get": {
+        "description": "Get a document by it's name, for example EMP001 of DocType Employee.",
+        "summary": "Get a specific document",
+        "tags": [
+          "RESTful API"
+        ],
+        "operationId": "Getaspecificdocument",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "DocType",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The DocType you'd like to receive. For example Customer, Supplier, \nEmployee, Account, Lead, Company, Sales Invoice, Purchase Invoice, Stock Entry, etc."
+          },
+          {
+            "name": "DocumentName",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The name (ID) of the document you'd like to receive. For example EMP001 (of type Employee)."
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "default": "[\r\n  \"name\"\r\n]",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Found requested document",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200"
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      },
+      "put": {
+        "description": "TBD",
+        "summary": "Update a specific document",
+        "tags": [
+          "RESTful API"
+        ],
+        "operationId": "Updateaspecificdocument",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "DocType",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The DocType you'd like to receive. For example Customer, Supplier, \nEmployee, Account, Lead, Company, Sales Invoice, Purchase Invoice, Stock Entry, etc."
+          },
+          {
+            "name": "DocumentName",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The name (ID) of the document you'd like to update. For example EMP001 (of type Employee)."
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": false,
+            "enum": [
+              "application/json"
+            ],
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated specified document",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200"
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      },
+      "delete": {
+        "description": "TBD",
+        "summary": "Delete a specific document",
+        "tags": [
+          "RESTful API"
+        ],
+        "operationId": "Deleteaspecificdocument",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "DocType",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The type of the document you'd like to delete. For example Customer, Supplier, \nEmployee, Account, Lead, Company, Sales Invoice, Purchase Invoice, Stock Entry, etc."
+          },
+          {
+            "name": "DocumentName",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The name (ID) of the document you'd like to delete. For example EMP001 (of type Employee)."
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Deleted specified document",
+            "schema": {
+              "$ref": "#/definitions/inline_response_202"
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/method/{dotted_path_to_method}": {
+      "get": {
+        "description": "Call a remote procedure",
+        "summary": "Call a remote procedure",
+        "tags": [
+          "Remote Procedure Call"
+        ],
+        "operationId": "Callaremoteprocedure",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "dotted_path_to_method",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Path to the function you'd like to call, separated by dots."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      },
+      "post": {
+        "description": "Post data to a remote procedure",
+        "summary": "Post data to a remote procedure",
+        "tags": [
+          "Remote Procedure Call"
+        ],
+        "operationId": "Postdatatoaremoteprocedure",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "dotted_path_to_method",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Path to the function you'd like to call, separated by dots."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/method/version": {
+      "get": {
+        "description": "Get the version of the app",
+        "summary": "ApiMethodVersion_GET",
+        "tags": [
+          "Example Procedures"
+        ],
+        "operationId": "ApiMethodVersion_GET",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            },
+            "examples": {
+              "application/json": {
+                "message": "10.1.36"
+              }
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/method/frappe.desk.tags.add_tag": {
+      "post": {
+        "description": "Add a tag to a document",
+        "summary": "ApiMethodFrappeDeskTagsAddTag_POST",
+        "tags": [
+          "Example Procedures"
+        ],
+        "operationId": "ApiMethodFrappeDeskTagsAddTag_POST",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "tag",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Tag to add"
+          },
+          {
+            "name": "dt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Target DocType"
+          },
+          {
+            "name": "dn",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Target document"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            },
+            "examples": {
+              "application/json": {
+                "message": "My Tag"
+              }
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/method/frappe.client.rename_doc": {
+      "post": {
+        "description": "Change the unique ID (name) of a document",
+        "summary": "ApiMethodFrappeClientRenameDoc_POST",
+        "tags": [
+          "Example Procedures"
+        ],
+        "operationId": "ApiMethodFrappeClientRenameDoc_POST",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": false,
+            "enum": [
+              "application/json"
+            ],
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/method_frappe_client_rename_doc_body"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "search results matching criteria",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            },
+            "examples": {
+              "application/json": {
+                "message": "K-0001"
+              }
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/method/uploadfile": {
+      "post": {
+        "description": "Upload an attachment to any existing record",
+        "summary": "ApiMethodUploadfile_POST",
+        "tags": [
+          "Example Procedures"
+        ],
+        "operationId": "ApiMethodUploadfile_POST",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": false,
+            "enum": [
+              "application/json"
+            ],
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/method_uploadfile_body"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "search results matching criteria",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            },
+            "examples": {
+              "application/json": {
+                "message": "{\"file_url\":\"/files/example.pdf\"}"
+              }
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/resource/DocType": {
+      "get": {
+        "description": "Get a list of Doctypes",
+        "summary": "Get a list of Doctypes",
+        "tags": [
+          "Example DocTypes"
+        ],
+        "operationId": "GetalistofDoctypes",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "default": "[\r\n  \"name\"\r\n]",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]"
+          },
+          {
+            "name": "limit_page_length",
+            "in": "query",
+            "required": false,
+            "default": 20,
+            "type": "integer",
+            "format": "int32",
+            "description": "By default, all listings are returned paginated. With this parameter you can change the \npage size (how many items are teturned at once)."
+          },
+          {
+            "name": "limit_start",
+            "in": "query",
+            "required": false,
+            "default": 0,
+            "type": "integer",
+            "format": "int32",
+            "description": "To request successive pages, pass a multiple of your limit_page_length as limit_start. \nFor Example, to request the second page, pass limit_start as 20."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Found requested documents",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_2"
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/resource/Project": {
+      "get": {
+        "description": "Returns a list of projects",
+        "summary": "Get a list of projects",
+        "tags": [
+          "Example DocTypes"
+        ],
+        "operationId": "Getalistofprojects",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "default": "[\r\n  \"name\"\r\n]",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]"
+          },
+          {
+            "name": "limit_page_length",
+            "in": "query",
+            "required": false,
+            "default": 20,
+            "type": "integer",
+            "format": "int32",
+            "description": "By default, all listings are returned paginated. With this parameter you can change the \npage size (how many items are teturned at once)."
+          },
+          {
+            "name": "limit_start",
+            "in": "query",
+            "required": false,
+            "default": 0,
+            "type": "integer",
+            "format": "int32",
+            "description": "To request successive pages, pass a multiple of your limit_page_length as limit_start. \nFor Example, to request the second page, pass limit_start as 20."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Found some projects. By default, only the \"name\" field is included in the listing, \nto add more fields, you can pass the fields param to GET request.",
+            "schema": {
+              "$ref": "#/definitions/DocList"
+            },
+            "examples": {
+              "application/json": {
+                "data": [
+                  {
+                    "name": "My Project 1"
+                  },
+                  {
+                    "name": "My Project 2"
+                  }
+                ]
+              }
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/resource/Employee": {
+      "get": {
+        "description": "For example, fields=[\"name\",\"company\",\"employee_name\"].\n\nTo get the Employee for a specific user, pass filters=[[\"user_id\",\"=\",\"mail@example.com\"]]\n",
+        "summary": "Get a list of Employees",
+        "tags": [
+          "Example DocTypes"
+        ],
+        "operationId": "GetalistofEmployees",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "default": "[\r\n  \"name\"\r\n]",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]"
+          },
+          {
+            "name": "limit_page_length",
+            "in": "query",
+            "required": false,
+            "default": 20,
+            "type": "integer",
+            "format": "int32",
+            "description": "By default, all listings are returned paginated. With this parameter you can change the \npage size (how many items are teturned at once)."
+          },
+          {
+            "name": "limit_start",
+            "in": "query",
+            "required": false,
+            "default": 0,
+            "type": "integer",
+            "format": "int32",
+            "description": "To request successive pages, pass a multiple of your limit_page_length as limit_start. \nFor Example, to request the second page, pass limit_start as 20."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Everything fine :)",
+            "schema": {
+              "$ref": "#/definitions/DocList"
+            },
+            "examples": {
+              "application/json": {
+                "data": [
+                  {
+                    "name": "EMP/0001",
+                    "company": "Google LLC",
+                    "employee_name": "Larry Page"
+                  },
+                  {
+                    "name": "EMP/0002",
+                    "company": "Google LLC",
+                    "employee_name": "Sergey Brin"
+                  }
+                ]
+              }
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/resource/Timesheet": {
+      "get": {
+        "description": "Returns a list of documents of the given type",
+        "summary": "Get a list of timesheets",
+        "tags": [
+          "Example DocTypes"
+        ],
+        "operationId": "Getalistoftimesheets",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "default": "[\r\n  \"name\"\r\n]",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]"
+          },
+          {
+            "name": "limit_page_length",
+            "in": "query",
+            "required": false,
+            "default": 20,
+            "type": "integer",
+            "format": "int32",
+            "description": "By default, all listings are returned paginated. With this parameter you can change the \npage size (how many items are teturned at once)."
+          },
+          {
+            "name": "limit_start",
+            "in": "query",
+            "required": false,
+            "default": 0,
+            "type": "integer",
+            "format": "int32",
+            "description": "To request successive pages, pass a multiple of your limit_page_length as limit_start. \nFor Example, to request the second page, pass limit_start as 20."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Found some timesheets. By default, only the \"name\" field is included in the listing, \nto add more fields, you can pass the fields param to GET request.",
+            "schema": {
+              "$ref": "#/definitions/DocList"
+            },
+            "examples": {
+              "application/json": {
+                "data": [
+                  {
+                    "name": "TS-00001"
+                  },
+                  {
+                    "name": "TS-00002"
+                  }
+                ]
+              }
+            },
+            "headers": {}
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new timesheet",
+        "summary": "Create a new timesheet",
+        "tags": [
+          "Example DocTypes"
+        ],
+        "operationId": "Createanewtimesheet",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": false,
+            "enum": [
+              "application/x-www-form-urlencoded"
+            ],
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "data",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document created",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Insufficient Permission",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403_1"
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/api/resource/Webhook": {
+      "get": {
+        "description": "Get a list of Webhooks",
+        "summary": "Get a list of Webhooks",
+        "tags": [
+          "Example DocTypes"
+        ],
+        "operationId": "GetalistofWebhooks",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "parameters": [
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "default": "[\r\n  \"name\"\r\n]",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]"
+          },
+          {
+            "name": "limit_page_length",
+            "in": "query",
+            "required": false,
+            "default": 20,
+            "type": "integer",
+            "format": "int32",
+            "description": "By default, all listings are returned paginated. With this parameter you can change the \npage size (how many items are teturned at once)."
+          },
+          {
+            "name": "limit_start",
+            "in": "query",
+            "required": false,
+            "default": 0,
+            "type": "integer",
+            "format": "int32",
+            "description": "To request successive pages, pass a multiple of your limit_page_length as limit_start. \nFor Example, to request the second page, pass limit_start as 20."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Found requested documents",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200_2"
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new Webhook",
+        "summary": "Create a new Webhook",
+        "tags": [
+          "Example DocTypes"
+        ],
+        "operationId": "CreateanewWebhook",
+        "deprecated": false,
+        "produces": [
+          "application/json",
+          "text/html"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": false,
+            "enum": [
+              "application/json"
+            ],
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/resource_Webhook_body"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Found requested document",
+            "schema": {
+              "$ref": "#/definitions/inline_response_200"
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_401"
+            },
+            "headers": {}
+          },
+          "403": {
+            "description": "Authentication information is missing or invalid",
+            "schema": {
+              "$ref": "#/definitions/inline_response_403"
+            },
+            "headers": {}
+          }
         }
       }
     }
-  ],
+  },
+  "definitions": {
+    "DocType": {
+      "title": "DocType",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "modified_by": {
+          "type": "string"
+        },
+        "creation": {
+          "type": "string"
+        },
+        "modified": {
+          "type": "string"
+        },
+        "doctype": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "docstatus": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "DocList": {
+      "title": "DocList",
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DocList_data"
+          }
+        }
+      }
+    },
+    "Message": {
+      "title": "Message",
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "inline_response_401": {
+      "title": "inline_response_401",
+      "type": "object",
+      "properties": {
+        "exc": {
+          "example": "Traceback (most recent call last) ...",
+          "type": "string"
+        },
+        "_server_messages": {
+          "example": [
+            {
+              "message": "Not permitted"
+            }
+          ],
+          "type": "string"
+        }
+      }
+    },
+    "inline_response_403": {
+      "title": "inline_response_403",
+      "type": "object",
+      "properties": {
+        "locals": {
+          "type": "string"
+        },
+        "exc": {
+          "example": "Traceback (most recent call last) ...",
+          "type": "string"
+        },
+        "_server_messages": {
+          "example": "Incorrect password",
+          "type": "string"
+        }
+      }
+    },
+    "resource_DocType_body": {
+      "title": "resource_DocType_body",
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object"
+        }
+      }
+    },
+    "inline_response_200": {
+      "title": "inline_response_200",
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/DocType"
+        }
+      }
+    },
+    "inline_response_202": {
+      "title": "inline_response_202",
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "method_login_body": {
+      "title": "method_login_body",
+      "type": "object",
+      "properties": {
+        "usr": {
+          "example": "Administrator",
+          "type": "string"
+        },
+        "pwd": {
+          "example": "admin",
+          "type": "string"
+        }
+      }
+    },
+    "method_login_body_1": {
+      "title": "method_login_body_1",
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object"
+        }
+      }
+    },
+    "inline_response_200_1": {
+      "title": "inline_response_200_1",
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "example": "Administrator",
+          "type": "string"
+        },
+        "message": {
+          "example": "Logged in",
+          "type": "string"
+        },
+        "home_page": {
+          "example": "/desk",
+          "type": "string"
+        }
+      }
+    },
+    "method_frappe_client_rename_doc_body": {
+      "title": "method_frappe_client_rename_doc_body",
+      "type": "object",
+      "properties": {
+        "doctype": {
+          "example": "Customer",
+          "type": "string"
+        },
+        "old_name": {
+          "example": "CUST-2021-00001",
+          "type": "string"
+        },
+        "new_name": {
+          "example": "K-0001",
+          "type": "string"
+        }
+      }
+    },
+    "method_uploadfile_body": {
+      "title": "method_uploadfile_body",
+      "type": "object",
+      "properties": {
+        "doctype": {
+          "description": "Attach file to an instace of this DocType",
+          "type": "string"
+        },
+        "docname": {
+          "description": "Name of the DocType instance",
+          "type": "string"
+        },
+        "docfield": {
+          "description": "(Attach-)Field of the DocType instance",
+          "type": "string"
+        },
+        "filename": {
+          "description": "How the file should be named in ERPNext",
+          "example": "example.pdf",
+          "type": "string"
+        },
+        "from_form": {
+          "description": "Set to 0 if you're using a specific method",
+          "example": "1",
+          "type": "string"
+        },
+        "method": {
+          "description": "Specific whitelisted method to handle the request",
+          "example": "dotted.path.to.method",
+          "type": "string"
+        },
+        "filedata": {
+          "description": "Base64 encoded file data",
+          "type": "string"
+        }
+      }
+    },
+    "inline_response_200_2": {
+      "title": "inline_response_200_2",
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/DocList"
+        }
+      }
+    },
+    "apiresourceTimesheet_time_logs": {
+      "title": "apiresourceTimesheet_time_logs",
+      "type": "object",
+      "properties": {
+        "from_time": {
+          "example": "2019-02-28 00:00:00",
+          "type": "string"
+        },
+        "to_time": {
+          "example": "2019-02-28 23:59:59",
+          "type": "string"
+        },
+        "project": {
+          "example": "Timetracking App",
+          "type": "string"
+        },
+        "activity_type": {
+          "example": "Development",
+          "type": "string"
+        }
+      }
+    },
+    "resource_Timesheet_body": {
+      "title": "resource_Timesheet_body",
+      "type": "object",
+      "properties": {
+        "company": {
+          "example": "Alyf",
+          "type": "string"
+        },
+        "employee": {
+          "example": "EMP/0001",
+          "type": "string"
+        },
+        "note": {
+          "example": "Built that feature",
+          "type": "string"
+        },
+        "time_logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiresourceTimesheet_time_logs"
+          }
+        }
+      }
+    },
+    "resource_Timesheet_body_1": {
+      "title": "resource_Timesheet_body_1",
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object"
+        }
+      }
+    },
+    "inline_response_403_1": {
+      "title": "inline_response_403_1",
+      "type": "object",
+      "properties": {
+        "exc": {
+          "example": "Traceback (most recent call last) ...",
+          "type": "string"
+        },
+        "_error_message": {
+          "example": "Insufficient Permission for {DocType}",
+          "type": "string"
+        }
+      }
+    },
+    "apiresourceWebhook_webhook_headers": {
+      "title": "apiresourceWebhook_webhook_headers",
+      "type": "object",
+      "properties": {
+        "key": {
+          "example": "Authorization",
+          "type": "string"
+        },
+        "value": {
+          "example": "Basic tZaxXzUdgCXWhokGmoFNUJDfzpfmFwmbtgebyNRMm==",
+          "type": "string"
+        }
+      }
+    },
+    "apiresourceWebhook_webhook_data": {
+      "title": "apiresourceWebhook_webhook_data",
+      "type": "object",
+      "properties": {
+        "key": {
+          "example": "invoice_no",
+          "type": "string"
+        },
+        "fieldname": {
+          "example": "name",
+          "type": "string"
+        }
+      }
+    },
+    "resource_Webhook_body": {
+      "title": "resource_Webhook_body",
+      "type": "object",
+      "properties": {
+        "webhook_doctype": {
+          "example": "Sales Invoice",
+          "type": "string"
+        },
+        "webhook_docevent": {
+          "example": "on_submit",
+          "type": "string"
+        },
+        "request_url": {
+          "example": "https://my.web.service/new/invoice",
+          "type": "string"
+        },
+        "webhook_headers": {
+          "description": "Request headers, for example for authorization",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiresourceWebhook_webhook_headers"
+          }
+        },
+        "webhook_data": {
+          "description": "Map document fields to keys",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiresourceWebhook_webhook_data"
+          }
+        }
+      }
+    },
+    "DocList_data": {
+      "title": "DocList_data",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "security": [],
   "tags": [
     {
       "name": "Naive Authentication",
@@ -53,2181 +1772,7 @@
       "name": "Example DocTypes"
     }
   ],
-  "paths": {
-    "/api/method/{dotted_path_to_method}": {
-      "get": {
-        "tags": [
-          "Remote Procedure Call"
-        ],
-        "summary": "Call a remote procedure",
-        "parameters": [
-          {
-            "name": "dotted_path_to_method",
-            "in": "path",
-            "description": "Path to the function you'd like to call, separated by dots.\n",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string",
-              "example": "frappe.auth.get_logged_user"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful"
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Remote Procedure Call"
-        ],
-        "summary": "Post data to a remote procedure",
-        "parameters": [
-          {
-            "name": "dotted_path_to_method",
-            "in": "path",
-            "description": "Path to the function you'd like to call, separated by dots.\n",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string",
-              "example": "frappe.auth.get_logged_user"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful"
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/resource/{DocType}": {
-      "get": {
-        "tags": [
-          "RESTful API"
-        ],
-        "summary": "Get a list of documents",
-        "description": "Returns a list of documents of the given type",
-        "parameters": [
-          {
-            "name": "DocType",
-            "in": "path",
-            "description": "The DocType you'd like to receive. For example Customer, Supplier, \nEmployee, Account, Lead, Company, Sales Invoice, Purchase Invoice, Stock Entry, etc.\n",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "fields",
-            "in": "query",
-            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "default": [
-                "name"
-              ]
-            }
-          },
-          {
-            "name": "filters",
-            "in": "query",
-            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          {
-            "name": "limit_page_length",
-            "in": "query",
-            "description": "By default, all listings are returned paginated. With this parameter you can change the \npage size (how many items are teturned at once).\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
-          },
-          {
-            "name": "limit_start",
-            "in": "query",
-            "description": "To request successive pages, pass a multiple of your limit_page_length as limit_start. \nFor Example, to request the second page, pass limit_start as 20.\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Found requested DocType. By default, only the \"name\" field is included in the listing, \nto add more fields, you can pass the fields param to GET request.\n",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DocList"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "RESTful API"
-        ],
-        "summary": "Create a new document",
-        "parameters": [
-          {
-            "name": "DocType",
-            "in": "path",
-            "description": "The DocType you'd like to receive. For example Customer, Supplier, \nEmployee, Account, Lead, Company, Sales Invoice, Purchase Invoice, Stock Entry, etc.\n",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object"
-              }
-            },
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "$ref": "#/components/schemas/resource_DocType_body"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Document created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_200"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/resource/{DocType}/{DocumentName}": {
-      "get": {
-        "tags": [
-          "RESTful API"
-        ],
-        "summary": "Get a specific document",
-        "description": "Get a document by it's name, for example EMP001 of DocType Employee.",
-        "parameters": [
-          {
-            "name": "DocType",
-            "in": "path",
-            "description": "The DocType you'd like to receive. For example Customer, Supplier, \nEmployee, Account, Lead, Company, Sales Invoice, Purchase Invoice, Stock Entry, etc.\n",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "DocumentName",
-            "in": "path",
-            "description": "The name (ID) of the document you'd like to receive. For example EMP001 (of type Employee).\n",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "fields",
-            "in": "query",
-            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "default": [
-                "name"
-              ]
-            }
-          },
-          {
-            "name": "filters",
-            "in": "query",
-            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Found requested document",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_200"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "RESTful API"
-        ],
-        "summary": "Update a specific document",
-        "description": "TBD",
-        "parameters": [
-          {
-            "name": "DocType",
-            "in": "path",
-            "description": "The DocType you'd like to receive. For example Customer, Supplier, \nEmployee, Account, Lead, Company, Sales Invoice, Purchase Invoice, Stock Entry, etc.\n",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "DocumentName",
-            "in": "path",
-            "description": "The name (ID) of the document you'd like to update. For example EMP001 (of type Employee).\n",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Updated specified document",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_200"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "RESTful API"
-        ],
-        "summary": "Delete a specific document",
-        "description": "TBD",
-        "parameters": [
-          {
-            "name": "DocType",
-            "in": "path",
-            "description": "The type of the document you'd like to delete. For example Customer, Supplier, \nEmployee, Account, Lead, Company, Sales Invoice, Purchase Invoice, Stock Entry, etc.\n",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "DocumentName",
-            "in": "path",
-            "description": "The name (ID) of the document you'd like to delete. For example EMP001 (of type Employee).\n",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "202": {
-            "description": "Deleted specified document",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_202"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/method/login": {
-      "post": {
-        "tags": [
-          "Naive Authentication",
-          "Example Procedures"
-        ],
-        "summary": "Authenticate yourself",
-        "operationId": "login",
-        "parameters": [
-          {
-            "name": "usr",
-            "in": "query",
-            "description": "Your username",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "example": "Administrator"
-            }
-          },
-          {
-            "name": "pwd",
-            "in": "query",
-            "description": "Your password",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "example": "admin"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/method_login_body"
-              }
-            },
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "$ref": "#/components/schemas/method_login_body_1"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Login successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_200_1"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/method/logout": {
-      "get": {
-        "tags": [
-          "Naive Authentication",
-          "Example Procedures"
-        ],
-        "summary": "Logout from current session",
-        "responses": {
-          "200": {
-            "description": "Logged out.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/method/frappe.auth.get_logged_user": {
-      "get": {
-        "tags": [
-          "Naive Authentication",
-          "Example Procedures"
-        ],
-        "summary": "Get the user that is logged in",
-        "description": "Get the currently logged in user",
-        "operationId": "authGetLoggedUser",
-        "responses": {
-          "200": {
-            "description": "search results matching criteria",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Message"
-                },
-                "example": {
-                  "message": "demo@erpnext.com"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/method/version": {
-      "get": {
-        "tags": [
-          "Example Procedures"
-        ],
-        "description": "Get the version of the app",
-        "responses": {
-          "200": {
-            "description": "Successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Message"
-                },
-                "example": {
-                  "message": "10.1.36"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/method/frappe.desk.tags.add_tag": {
-      "post": {
-        "tags": [
-          "Example Procedures"
-        ],
-        "description": "Add a tag to a document",
-        "parameters": [
-          {
-            "name": "tag",
-            "in": "query",
-            "description": "Tag to add",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "example": "My Tag"
-            }
-          },
-          {
-            "name": "dt",
-            "in": "query",
-            "description": "Target DocType",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "example": "Sales Invoice"
-            }
-          },
-          {
-            "name": "dn",
-            "in": "query",
-            "description": "Target document",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "example": "SINV-0001"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Message"
-                },
-                "example": {
-                  "message": "My Tag"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/method/frappe.client.rename_doc": {
-      "post": {
-        "tags": [
-          "Example Procedures"
-        ],
-        "description": "Change the unique ID (name) of a document",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/method_frappe_client_rename_doc_body"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "search results matching criteria",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Message"
-                },
-                "example": {
-                  "message": "K-0001"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/method/frappe.client.insert_many": {
-      "post": {
-        "tags": [
-          "Example Procedures"
-        ],
-        "description": "Insert multiple documents at once",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/method_frappe_client_insert_many_body"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "search results matching criteria",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Message"
-                },
-                "example": {
-                  "message": "K-0001"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/method/uploadfile": {
-      "post": {
-        "tags": [
-          "Example Procedures"
-        ],
-        "description": "Upload an attachment to any existing record",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/method_uploadfile_body"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "search results matching criteria",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Message"
-                },
-                "example": {
-                  "message": {
-                    "file_url": "/files/example.pdf"
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/resource/DocType": {
-      "get": {
-        "tags": [
-          "Example DocTypes"
-        ],
-        "summary": "Get a list of Doctypes",
-        "parameters": [
-          {
-            "name": "fields",
-            "in": "query",
-            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "default": [
-                "name"
-              ]
-            }
-          },
-          {
-            "name": "filters",
-            "in": "query",
-            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          {
-            "name": "limit_page_length",
-            "in": "query",
-            "description": "By default, all listings are returned paginated. With this parameter you can change the \npage size (how many items are teturned at once).\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
-          },
-          {
-            "name": "limit_start",
-            "in": "query",
-            "description": "To request successive pages, pass a multiple of your limit_page_length as limit_start. \nFor Example, to request the second page, pass limit_start as 20.\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Found requested documents",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_200_2"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/resource/Project": {
-      "get": {
-        "tags": [
-          "Example DocTypes"
-        ],
-        "summary": "Get a list of projects",
-        "description": "Returns a list of projects",
-        "parameters": [
-          {
-            "name": "fields",
-            "in": "query",
-            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "default": [
-                "name"
-              ]
-            }
-          },
-          {
-            "name": "filters",
-            "in": "query",
-            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          {
-            "name": "limit_page_length",
-            "in": "query",
-            "description": "By default, all listings are returned paginated. With this parameter you can change the \npage size (how many items are teturned at once).\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
-          },
-          {
-            "name": "limit_start",
-            "in": "query",
-            "description": "To request successive pages, pass a multiple of your limit_page_length as limit_start. \nFor Example, to request the second page, pass limit_start as 20.\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Found some projects. By default, only the \"name\" field is included in the listing, \nto add more fields, you can pass the fields param to GET request.\n",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DocList"
-                },
-                "example": {
-                  "data": [
-                    {
-                      "name": "My Project 1"
-                    },
-                    {
-                      "name": "My Project 2"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/resource/Employee": {
-      "get": {
-        "tags": [
-          "Example DocTypes"
-        ],
-        "summary": "Get a list of Employees",
-        "description": "For example, fields=[\"name\",\"company\",\"employee_name\"].\n\nTo get the Employee for a specific user, pass filters=[[\"user_id\",\"=\",\"mail@example.com\"]]\n",
-        "parameters": [
-          {
-            "name": "fields",
-            "in": "query",
-            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "default": [
-                "name"
-              ]
-            }
-          },
-          {
-            "name": "filters",
-            "in": "query",
-            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          {
-            "name": "limit_page_length",
-            "in": "query",
-            "description": "By default, all listings are returned paginated. With this parameter you can change the \npage size (how many items are teturned at once).\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
-          },
-          {
-            "name": "limit_start",
-            "in": "query",
-            "description": "To request successive pages, pass a multiple of your limit_page_length as limit_start. \nFor Example, to request the second page, pass limit_start as 20.\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Everything fine :)\n",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DocList"
-                },
-                "example": {
-                  "data": [
-                    {
-                      "name": "EMP/0001",
-                      "company": "Google LLC",
-                      "employee_name": "Larry Page"
-                    },
-                    {
-                      "name": "EMP/0002",
-                      "company": "Google LLC",
-                      "employee_name": "Sergey Brin"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/resource/Timesheet": {
-      "get": {
-        "tags": [
-          "Example DocTypes"
-        ],
-        "summary": "Get a list of timesheets",
-        "description": "Returns a list of documents of the given type",
-        "parameters": [
-          {
-            "name": "fields",
-            "in": "query",
-            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "default": [
-                "name"
-              ]
-            }
-          },
-          {
-            "name": "filters",
-            "in": "query",
-            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          {
-            "name": "limit_page_length",
-            "in": "query",
-            "description": "By default, all listings are returned paginated. With this parameter you can change the \npage size (how many items are teturned at once).\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
-          },
-          {
-            "name": "limit_start",
-            "in": "query",
-            "description": "To request successive pages, pass a multiple of your limit_page_length as limit_start. \nFor Example, to request the second page, pass limit_start as 20.\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Found some timesheets. By default, only the \"name\" field is included in the listing, \nto add more fields, you can pass the fields param to GET request.\n",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DocList"
-                },
-                "example": {
-                  "data": [
-                    {
-                      "name": "TS-00001"
-                    },
-                    {
-                      "name": "TS-00002"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Example DocTypes"
-        ],
-        "summary": "Create a new timesheet",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/resource_Timesheet_body"
-              }
-            },
-            "application/x-www-form-urlencoded": {
-              "schema": {
-                "$ref": "#/components/schemas/resource_Timesheet_body_1"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Document created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_200"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Insufficient Permission",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403_1"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/resource/Webhook": {
-      "get": {
-        "tags": [
-          "Example DocTypes"
-        ],
-        "summary": "Get a list of Webhooks",
-        "parameters": [
-          {
-            "name": "fields",
-            "in": "query",
-            "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "default": [
-                "name"
-              ]
-            }
-          },
-          {
-            "name": "filters",
-            "in": "query",
-            "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          {
-            "name": "limit_page_length",
-            "in": "query",
-            "description": "By default, all listings are returned paginated. With this parameter you can change the \npage size (how many items are teturned at once).\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": 20
-            }
-          },
-          {
-            "name": "limit_start",
-            "in": "query",
-            "description": "To request successive pages, pass a multiple of your limit_page_length as limit_start. \nFor Example, to request the second page, pass limit_start as 20.\n",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": 0
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Found requested documents",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_200_2"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Example DocTypes"
-        ],
-        "summary": "Create a new Webhook",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/resource_Webhook_body"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Found requested document",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_200"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_401"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication information is missing or invalid",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/inline_response_403"
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "DocType": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "modified_by": {
-            "type": "string"
-          },
-          "creation": {
-            "type": "string"
-          },
-          "modified": {
-            "type": "string"
-          },
-          "doctype": {
-            "type": "string"
-          },
-          "owner": {
-            "type": "string"
-          },
-          "docstatus": {
-            "type": "integer"
-          }
-        }
-      },
-      "DocList": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DocList_data"
-            }
-          }
-        }
-      },
-      "Message": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string"
-          }
-        }
-      },
-      "inline_response_401": {
-        "type": "object",
-        "properties": {
-          "exc": {
-            "type": "string",
-            "example": "Traceback (most recent call last) ..."
-          },
-          "_server_messages": {
-            "type": "string",
-            "example": "[{\"message\": \"Not permitted\"}]"
-          }
-        }
-      },
-      "inline_response_403": {
-        "type": "object",
-        "properties": {
-          "locals": {
-            "type": "string"
-          },
-          "exc": {
-            "type": "string",
-            "example": "Traceback (most recent call last) ..."
-          },
-          "_server_messages": {
-            "type": "string",
-            "example": "Incorrect password"
-          }
-        }
-      },
-      "resource_DocType_body": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "object"
-          }
-        }
-      },
-      "inline_response_200": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/DocType"
-          }
-        }
-      },
-      "inline_response_202": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string"
-          }
-        }
-      },
-      "method_login_body": {
-        "type": "object",
-        "properties": {
-          "usr": {
-            "type": "string",
-            "example": "Administrator"
-          },
-          "pwd": {
-            "type": "string",
-            "example": "admin"
-          }
-        }
-      },
-      "method_login_body_1": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "object"
-          }
-        }
-      },
-      "inline_response_200_1": {
-        "type": "object",
-        "properties": {
-          "full_name": {
-            "type": "string",
-            "example": "Administrator"
-          },
-          "message": {
-            "type": "string",
-            "example": "Logged in"
-          },
-          "home_page": {
-            "type": "string",
-            "example": "/desk"
-          }
-        }
-      },
-      "method_frappe_client_rename_doc_body": {
-        "type": "object",
-        "properties": {
-          "doctype": {
-            "type": "string",
-            "example": "Customer"
-          },
-          "old_name": {
-            "type": "string",
-            "example": "CUST-2021-00001"
-          },
-          "new_name": {
-            "type": "string",
-            "example": "K-0001"
-          }
-        }
-      },
-      "apimethodfrappe.client.insert_many_docs": {
-        "type": "object",
-        "properties": {
-          "doctype": {
-            "type": "string"
-          }
-        }
-      },
-      "method_frappe_client_insert_many_body": {
-        "type": "object",
-        "properties": {
-          "docs": {
-            "type": "array",
-            "items": {
-              "$ref": "apimethodfrappe.client.insert_many_docs"
-            }
-          }
-        }
-      },
-      "method_uploadfile_body": {
-        "type": "object",
-        "properties": {
-          "doctype": {
-            "type": "string",
-            "description": "Attach file to an instace of this DocType"
-          },
-          "docname": {
-            "type": "string",
-            "description": "Name of the DocType instance"
-          },
-          "docfield": {
-            "type": "string",
-            "description": "(Attach-)Field of the DocType instance"
-          },
-          "filename": {
-            "type": "string",
-            "description": "How the file should be named in ERPNext",
-            "example": "example.pdf"
-          },
-          "from_form": {
-            "type": "string",
-            "description": "Set to 0 if you're using a specific method",
-            "example": "1"
-          },
-          "method": {
-            "type": "string",
-            "description": "Specific whitelisted method to handle the request",
-            "example": "dotted.path.to.method"
-          },
-          "filedata": {
-            "type": "string",
-            "description": "Base64 encoded file data"
-          }
-        }
-      },
-      "inline_response_200_2": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/DocList"
-          }
-        }
-      },
-      "apiresourceTimesheet_time_logs": {
-        "type": "object",
-        "properties": {
-          "from_time": {
-            "type": "string",
-            "example": "2019-02-28 00:00:00"
-          },
-          "to_time": {
-            "type": "string",
-            "example": "2019-02-28 23:59:59"
-          },
-          "project": {
-            "type": "string",
-            "example": "Timetracking App"
-          },
-          "activity_type": {
-            "type": "string",
-            "example": "Development"
-          }
-        }
-      },
-      "resource_Timesheet_body": {
-        "type": "object",
-        "properties": {
-          "company": {
-            "type": "string",
-            "example": "Alyf"
-          },
-          "employee": {
-            "type": "string",
-            "example": "EMP/0001"
-          },
-          "note": {
-            "type": "string",
-            "example": "Built that feature"
-          },
-          "time_logs": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/apiresourceTimesheet_time_logs"
-            }
-          }
-        }
-      },
-      "resource_Timesheet_body_1": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "object"
-          }
-        }
-      },
-      "inline_response_403_1": {
-        "type": "object",
-        "properties": {
-          "exc": {
-            "type": "string",
-            "example": "Traceback (most recent call last) ..."
-          },
-          "_error_message": {
-            "type": "string",
-            "example": "Insufficient Permission for {DocType}"
-          }
-        }
-      },
-      "apiresourceWebhook_webhook_headers": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string",
-            "example": "Authorization"
-          },
-          "value": {
-            "type": "string",
-            "example": "Basic tZaxXzUdgCXWhokGmoFNUJDfzpfmFwmbtgebyNRMm=="
-          }
-        }
-      },
-      "apiresourceWebhook_webhook_data": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string",
-            "example": "invoice_no"
-          },
-          "fieldname": {
-            "type": "string",
-            "example": "name"
-          }
-        }
-      },
-      "resource_Webhook_body": {
-        "type": "object",
-        "properties": {
-          "webhook_doctype": {
-            "type": "string",
-            "example": "Sales Invoice"
-          },
-          "webhook_docevent": {
-            "type": "string",
-            "example": "on_submit"
-          },
-          "request_url": {
-            "type": "string",
-            "example": "https://my.web.service/new/invoice"
-          },
-          "webhook_headers": {
-            "type": "array",
-            "description": "Request headers, for example for authorization",
-            "items": {
-              "$ref": "#/components/schemas/apiresourceWebhook_webhook_headers"
-            }
-          },
-          "webhook_data": {
-            "type": "array",
-            "description": "Map document fields to keys",
-            "items": {
-              "$ref": "#/components/schemas/apiresourceWebhook_webhook_data"
-            }
-          }
-        }
-      },
-      "DocList_data": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "responses": {
-      "GetDocumentOK": {
-        "description": "Found requested document",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/inline_response_200"
-            }
-          }
-        }
-      },
-      "GetListOK": {
-        "description": "Found requested documents",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/inline_response_200_2"
-            }
-          }
-        }
-      },
-      "UnauthorizedError": {
-        "description": "Authentication information is missing or invalid",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/inline_response_401"
-            }
-          },
-          "text/html": {
-            "schema": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "Forbidden": {
-        "description": "Authentication information is missing or invalid",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/inline_response_403"
-            }
-          },
-          "text/html": {
-            "schema": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    "parameters": {
-      "DocType": {
-        "name": "DocType",
-        "in": "path",
-        "description": "The DocType you'd like to receive. For example Customer, Supplier, \nEmployee, Account, Lead, Company, Sales Invoice, Purchase Invoice, Stock Entry, etc.\n",
-        "required": true,
-        "style": "simple",
-        "explode": false,
-        "schema": {
-          "type": "string"
-        }
-      },
-      "Fields": {
-        "name": "fields",
-        "in": "query",
-        "description": "By default, only the \"name\" field is included in the listing, to add more fields, \nyou can pass the fields param to GET request. For example, fields=[\"name\",\"country\"]\n",
-        "required": false,
-        "style": "form",
-        "explode": true,
-        "schema": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [
-            "name"
-          ]
-        }
-      },
-      "Filters": {
-        "name": "filters",
-        "in": "query",
-        "description": "You can filter the listing using sql conditions by passing them as the filters GET param.\nEach condition is an array of the format, [{doctype}, {field}, {operator}, {value}].\nFor example, filters=[[\"Customer\", \"country\", \"=\", \"India\"]]\n",
-        "required": false,
-        "style": "form",
-        "explode": true,
-        "schema": {
-          "type": "array",
-          "items": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "PageLength": {
-        "name": "limit_page_length",
-        "in": "query",
-        "description": "By default, all listings are returned paginated. With this parameter you can change the \npage size (how many items are teturned at once).\n",
-        "required": false,
-        "style": "form",
-        "explode": true,
-        "schema": {
-          "type": "integer",
-          "default": 20
-        }
-      },
-      "PageStart": {
-        "name": "limit_start",
-        "in": "query",
-        "description": "To request successive pages, pass a multiple of your limit_page_length as limit_start. \nFor Example, to request the second page, pass limit_start as 20.\n",
-        "required": false,
-        "style": "form",
-        "explode": true,
-        "schema": {
-          "type": "integer",
-          "default": 0
-        }
-      }
-    },
-    "securitySchemes": {
-      "tokenAuth": {
-        "type": "apiKey",
-        "description": "Get your API keys at User -> Api Access -> Generate Keys.\n\"headers = {'Authorization': 'token <api_key>:<api_secret>'}\"\n",
-        "name": "Authorization",
-        "in": "header"
-      },
-      "basicAuth": {
-        "type": "http",
-        "description": "Get your API keys at User -> Api Access -> Generate Keys.\nusername = api_key; password = api_secret\n[More info](https://frappe.io/docs/user/en/guides/integration/token_based_auth)\n",
-        "scheme": "basic"
-      },
-      "oAuth2": {
-        "type": "oauth2",
-        "description": "This API uses OAuth 2 with the authorization code flow. \n[More info]https://frappe.io/docs/user/en/guides/integration/using_oauth)\n",
-        "flows": {
-          "authorizationCode": {
-            "authorizationUrl": "/method/frappe.integrations.oauth2.authorize",
-            "tokenUrl": "/method/frappe.integrations.oauth2.get_token",
-            "refreshUrl": "/method/frappe.integrations.oauth2.get_token",
-            "scopes": {
-              "all": "Same permissions as the user who created the oAuth client"
-            }
-          }
-        }
-      }
-    }
+  "externalDocs": {
+    "url": "https://frappe.io/docs/user/en/api/rest"
   }
 }
